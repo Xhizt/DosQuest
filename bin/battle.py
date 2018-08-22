@@ -8,7 +8,12 @@ import experience
 import skill
 import random
 
-class variables():
+#   Christian Tavares | DosQuest | 7/12/2018
+#
+#   This file is specifically designed for handling the battle sequence, and will terminate once the player runs, the
+#   enemies have all reached zero HP, or the player reaches zero HP. The program resumes where battle.py was called.
+
+class variables():  #Temporary variables used only in this class
 
     battleMessage = 'nothing'
     PlayerTurn = 1
@@ -30,7 +35,7 @@ class variables():
     enemy2arr = [0]*6#LV,HP,MP,ATT,DEF
     enemy3arr = [0,0,0,0,0]#LV,HP,MP,ATT,DEF
 
-def initialize(enemy1,enemy2,enemy3,Message,preEmptive,battleType):
+def initialize(enemy1,enemy2,enemy3,Message,preEmptive,battleType):  #initialize variables
     variables.target = 1
     variables.target1 = '>>>'
     variables.target2 = '   '
@@ -42,21 +47,23 @@ def initialize(enemy1,enemy2,enemy3,Message,preEmptive,battleType):
     variables.enemy2arr = [0] * 6
     variables.enemy3arr = [0] * 6
 
-    if battleType == 'regular':
-        randomnum = random.randint(1,100)
-        if randomnum < 51:
-            music.playTrackLooping('Sounds/Battle.wav')
-        else:
-            music.playTrackLooping('Sounds/ChaozFantasy.wav')
-    if battleType == 'boss':
-        music.playTrackLooping('Sounds/Boss.wav')
+    #The lines below were used to play music during the battles. Regular battles had 2 themes that could play.
+
+    #if battleType == 'regular':
+        #randomnum = random.randint(1,100)
+        #if randomnum < 51:
+            #music.playTrackLooping('Sounds/Battle.wav')
+        #else:
+            #music.playTrackLooping('Sounds/ChaozFantasy.wav')
+    #if battleType == 'boss':
+        #music.playTrackLooping('Sounds/Boss.wav')
 
     variables.battleMessage = Message
 
-    if preEmptive == 1:
+    if preEmptive == 1:  #Pre-emptive catch, makes it so that enemies attack first
         variables.PlayerTurn = 0
 
-    variables.playerBlock = .5
+    variables.playerBlock = .5  #50% damage reduction
 
     variables.player[0] = dat.characterLV
     variables.player[1] = dat.characterCurrentHP
@@ -78,24 +85,24 @@ def initialize(enemy1,enemy2,enemy3,Message,preEmptive,battleType):
     battleWindowRefresh(Message)
     idle()
 
-def idle():
+def idle():  #The equivalent of inputReader's ReadInput function. Waits for user input and responds accordingly
     while 0 == 0:
 
         if variables.enemy1arr[1] <= 0:
             if variables.enemy2arr[1] <= 0:
                 if variables.enemy3arr[1] <= 0:
-                    break
+                    break  #A loop break that checks if all enemies have zero hp or less. Victory
 
         if variables.run == 1:
-            break
+            break  #Run from fight, end battle
 
         if variables.PlayerTurn == 0:  # Enemy's turn
             enemyTurn()
 
         if variables.player[1] < 1:
-            break
+            break  #A loop break checking if player hp is less than 1. Lose Battle
 
-        targetCheck()
+        targetCheck()  #Sets the player's target. Draws a '>>>" on screen. Decides which foe is hit with single target attacks
 
         while msvcrt.kbhit():
             msvcrt.getwch()  # Stops console from accepting input until everything is displayed
@@ -104,10 +111,10 @@ def idle():
         battleProcessing(UserInput)
 
     if variables.player[1] <= 0:
-        loseBattle()
+        loseBattle()  #Lose
     elif variables.run == 1:
         dat.characterCurrentHP = variables.player[1]
-        runAway()
+        runAway()  #Run
     else:
         dat.characterCurrentHP = variables.player[1]
         dat.characterCurrentMP = variables.player[2]
@@ -115,49 +122,44 @@ def idle():
         exp = experience.showExpGain(variables.enemy1Type, variables.enemy2Type, variables.enemy3Type)
         winBattle(goldDropped, exp)
         experience.addExperience(variables.enemy1Type, variables.enemy2Type, variables.enemy3Type)
-    return
-
-    #rewardDistribution()
-    #expGain()
+    return  #Victory!
 
 def battleProcessing(input):
 
-    if input.upper() == 'K':
+    if input.upper() == 'K':  #Use the only skill you have! Spinslash
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
-        variables.PlayerTurn = 0
-        #variables.battleMessage = 'No skills yet!'
+        variables.PlayerTurn = 0  #Expends the player's turn here
         if variables.player[2] > 4:
             variables.player[2] -= 5
             skill.spinSlash()
-        else:
+        else:  #Catch for if player doesn't have 5 mp
             os.system('cls' if os.name == 'nt' else 'clear')
             variables.battleMessage = 'Not enough MP!'
             battleWindowRefresh(variables.battleMessage)
-        #battleWindowRefresh(variables.battleMessage)
-    elif input.upper() == 'G':
+    elif input.upper() == 'G':  #Mana recovery potion
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
-        if dat.equipmentManaPotionCount > 0:
+        if dat.equipmentManaPotionCount > 0:  #Check for potions
             if variables.player[2] < dat.characterMP:
                 variables.player[2] = dat.characterMP
-                dat.equipmentManaPotionCount -= 1
+                dat.equipmentManaPotionCount -= 1  #Remove 1 potion
                 music.playSE("Sounds/Recovery.wav")
-                time.sleep(0.5)
+                time.sleep(0.5)  #Adds delay to text display, allowing the player to read the battle messages
                 os.system('cls' if os.name == 'nt' else 'clear')
                 variables.PlayerTurn = 0
                 variables.battleMessage = 'Player uses a Mana Potion!! MP Recovered!!!'
                 battleWindowRefresh(variables.battleMessage)
-            else:
+            else:  #Catch if MP is full
                 os.system('cls' if os.name == 'nt' else 'clear')
                 variables.battleMessage = 'You are at maximum MP!'
                 battleWindowRefresh(variables.battleMessage)
-    elif input.upper() == 'H':
+    elif input.upper() == 'H':  #Health potion
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
-        if dat.equipmentPotionCount > 0:
+        if dat.equipmentPotionCount > 0:  #Check for potions
             recoveredHP = int(dat.characterHP * .40)
-            if recoveredHP + variables.player[1] > dat.characterHP:
+            if recoveredHP + variables.player[1] > dat.characterHP:  #If restored hp makes current HP higher than max, reduces current amount.
                 recoveredHP = (recoveredHP + variables.player[1]) - dat.characterHP
                 variables.player[1] = dat.characterHP
                 dat.equipmentPotionCount -= 1
@@ -167,11 +169,11 @@ def battleProcessing(input):
                 variables.PlayerTurn = 0
                 variables.battleMessage = 'Player uses a Potion! Restored {} HP!!'.format(recoveredHP)
                 battleWindowRefresh(variables.battleMessage)
-            elif variables.player[1] == dat.characterHP:
+            elif variables.player[1] == dat.characterHP:  #Catch if HP is full
                 os.system('cls' if os.name == 'nt' else 'clear')
                 variables.battleMessage = 'You are at maximum HP!'
                 battleWindowRefresh(variables.battleMessage)
-            else:
+            else:  #Normal usage of HP potion, adds recovered amount
                 variables.player[1] += recoveredHP
                 dat.equipmentPotionCount -= 1
                 music.playSE("Sounds/Recovery.wav")
@@ -180,46 +182,47 @@ def battleProcessing(input):
                 variables.PlayerTurn = 0
                 variables.battleMessage = 'Player uses a Potion! Restored {} HP!!'.format(recoveredHP)
                 battleWindowRefresh(variables.battleMessage)
-        else:
+        else:  #No potions
             os.system('cls' if os.name == 'nt' else 'clear')
             variables.battleMessage = 'No Potions!'
             battleWindowRefresh(variables.battleMessage)
-    elif input.upper() == 'R':
+    elif input.upper() == 'R':  #Run Away!!!
         os.system('cls' if os.name == 'nt' else 'clear')
         runRoll = random.randint(1, 100)
-        if runRoll > 60:
+        if runRoll > 60:  #40% chance to run away
             variables.run = 1
             dat.sceneTransition = 1
-        else:
+        else:  #Fail
             os.system('cls' if os.name == 'nt' else 'clear')
             variables.PlayerTurn = 0
             variables.battleMessage = 'Unable to run!'
             battleWindowRefresh(variables.battleMessage)
-    elif input.upper() == 'D':
+    elif input.upper() == 'D':  #Defend for 1 turn, reducing incoming damage
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
-        variables.playerDefending = 1
-        #music.playSE("Sounds/Damage.wav")
+        variables.playerDefending = 1  #Set defending flag to 'yes'
         time.sleep(0.5)
         os.system('cls' if os.name == 'nt' else 'clear')
         variables.PlayerTurn = 0
         variables.battleMessage = 'Player defends!'
         battleWindowRefresh(variables.battleMessage)
-    elif input.upper() == 'A':
+    elif input.upper() == 'A':  #Attack selected target
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
         music.playSE("Sounds/Damage.wav")
         time.sleep(0.5)
 
-        if variables.target == 1:
+        if variables.target == 1:  #Enemy 1
             result = variables.player[3] - variables.enemy1arr[4]
-            variables.enemy1arr[1] -= result
-        if variables.target == 2:
+            variables.enemy1arr[1] -= result  #Damage
+            if variables.enemy1arr[1] < 0:  #Catch to make enemy hp = 0 if they are negative
+                variables.enemy1arr[1] = 0
+        if variables.target == 2:  #Enemy 2
             result = variables.player[3] - variables.enemy2arr[4]
             variables.enemy2arr[1] -= result
             if variables.enemy2arr[1] < 0:
                 variables.enemy2arr[1] = 0
-        if variables.target == 3:
+        if variables.target == 3:  #Enemy 3
             result = variables.player[3] - variables.enemy3arr[4]
             variables.enemy3arr[1] -= result
             if variables.enemy3arr[1] < 0:
@@ -229,21 +232,21 @@ def battleProcessing(input):
         variables.PlayerTurn = 0
         variables.battleMessage = 'Player attacks!! Enemy took {} damage!'.format(result)
         battleWindowRefresh(variables.battleMessage)
-    elif input.upper() == 'S':
+    elif input.upper() == 'S':  #Switch targets
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
         variables.target += 1
-        if variables.target == 4:
+        if variables.target == 4:  #Reset to 1 if the integer is impossible
             variables.target = 1
 
-        if variables.target == 1 and variables.enemy1arr[1] < 1:
+        if variables.target == 1 and variables.enemy1arr[1] < 1:  #Check if enemy is alive before drawing an arrow
             variables.target = variables.target + 1
         if variables.target == 2 and variables.enemy2arr[1] < 1:
             variables.target += 1
         if variables.target == 3 and variables.enemy3arr[1] < 1:
             variables.target = 1
 
-        if variables.target == 1:
+        if variables.target == 1:  #Draw which variable has the target arrow
             variables.target1 = '>>>'
             variables.target2 = '   '
             variables.target3 = '   '
@@ -289,20 +292,20 @@ def battleProcessing(input):
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
 
-def enemyTurn():
-    if variables.enemy1arr[1] > 0:
+def enemyTurn():  #enemy
+    if variables.enemy1arr[1] > 0:  #enemy 1
         if variables.playerDefending == 0:
             time.sleep(1)
             music.playSE("Sounds\Damage.wav")
             damage = variables.enemy1arr[3] - variables.player[4]
-            if damage < 0:
+            if damage < 0:  #Catch so enemy cannot heal player for having negative rolls
                 damage = 0
             else:
                 variables.player[1] -= damage
             os.system('cls' if os.name == 'nt' else 'clear')
             variables.battleMessage = '{} attacks! Player takes {} damage!!'.format(variables.enemy1Type,damage)
             battleWindowRefresh(variables.battleMessage)
-        else:
+        else:  #Catch if player is defending
             time.sleep(1)
             music.playSE("Sounds\Defense.wav")
             damage = math.ceil((variables.enemy1arr[3] - variables.player[4]) * variables.playerBlock)
@@ -315,19 +318,19 @@ def enemyTurn():
             battleWindowRefresh(variables.battleMessage)
         if variables.player[1] < 1:
             return
-    if variables.enemy2arr[1] > 0:
+    if variables.enemy2arr[1] > 0:  #enemy 2
         if variables.playerDefending == 0:
             time.sleep(1)
             music.playSE("Sounds\Damage.wav")
             damage = variables.enemy2arr[3] - variables.player[4]
-            if damage < 0:
+            if damage < 0:  #Catch so enemy cannot heal player for having negative rolls
                 damage = 0
             else:
                 variables.player[1] -= damage
             os.system('cls' if os.name == 'nt' else 'clear')
             variables.battleMessage = '{} attacks! Player takes {} damage!!'.format(variables.enemy2Type,damage)
             battleWindowRefresh(variables.battleMessage)
-        else:
+        else:  #Catch if player is defending
             time.sleep(1)
             music.playSE("Sounds\Defense.wav")
             damage = math.ceil((variables.enemy2arr[3] - variables.player[4]) * variables.playerBlock)
@@ -338,19 +341,19 @@ def enemyTurn():
             os.system('cls' if os.name == 'nt' else 'clear')
             variables.battleMessage = '{} attacks! Player takes {} damage!!'.format(variables.enemy2Type, int(damage))
             battleWindowRefresh(variables.battleMessage)
-    if variables.enemy3arr[1] > 0:
+    if variables.enemy3arr[1] > 0:  #enemy 3
         if variables.playerDefending == 0:
             time.sleep(1)
             music.playSE("Sounds\Damage.wav")
             damage = variables.enemy3arr[3] - variables.player[4]
-            if damage < 0:
+            if damage < 0:  #Catch so enemy cannot heal player for having negative rolls
                 damage = 0
             else:
                 variables.player[1] -= damage
             os.system('cls' if os.name == 'nt' else 'clear')
             variables.battleMessage = '{} attacks! Player takes {} damage!!'.format(variables.enemy3Type, int(damage))
             battleWindowRefresh(variables.battleMessage)
-        else:
+        else:  #Catch if player is defending
             time.sleep(1)
             music.playSE("Sounds\Defense.wav")
             damage = math.ceil((variables.enemy3arr[3] - variables.player[4]) * variables.playerBlock)
@@ -363,21 +366,24 @@ def enemyTurn():
             battleWindowRefresh(variables.battleMessage)
 
     time.sleep(1)
-    variables.playerDefending = 0
-    variables.PlayerTurn = 1
+    variables.playerDefending = 0  #Remove player defending flag
+    variables.PlayerTurn = 1  #Flag up for player turn
 
-def targetCheck():
+def targetCheck():  #Check player targets in case they are targeting a now dead enemy
     if eval('variables.enemy{}arr[{}]'.format(variables.target, 1)) <= 0:
         variables.target += 1
 
-        if variables.target == 2 and variables.enemy2arr[0] == 'No Enemy':
-            variables.target += 1
-        if variables.target == 3 and variables.enemy3arr[0] == 'No Enemy':
-            variables.target += 1
+        if variables.target == 2:
+            if variables.enemy2arr[0] == 'No Enemy' or variables.enemy2arr[1] < 1:
+                variables.target += 1
+        if variables.target == 3:
+            if variables.enemy3arr[0] == 'No Enemy' or variables.enemy3arr[1] < 1:
+                variables.target += 1
         if variables.target == 4:
             variables.target = 1
-        if variables.target == 1 and variables.enemy1arr[0] == 'No Enemy':
-            variables.target = variables.target + 1
+        if variables.target == 1:
+            if variables.enemy1arr[0] == 'No Enemy' or variables.enemy1arr[1] < 1:
+                variables.target += 1
 
         if variables.target == 1:
             variables.target1 = '>>>'
@@ -395,7 +401,7 @@ def targetCheck():
         os.system('cls' if os.name == 'nt' else 'clear')
         battleWindowRefresh(variables.battleMessage)
 
-def getVariables(enemy,enemyNumber):
+def getVariables(enemy,enemyNumber):  #One function that encapsulates all of your variable loading from dat.py
     if enemyNumber == 1:
         if enemy != 'null':
             variables.enemy1arr[0] = eval('dat.' + variables.enemy1Type + 'LV')

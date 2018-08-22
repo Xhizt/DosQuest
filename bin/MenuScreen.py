@@ -5,8 +5,12 @@ import experience
 import os
 import time
 
+#   Christian Tavares | DosQuest | 7/12/2018
+#
+#   This file holds all of the game's menu screens. Some of the above libraries are unused
+
 def restScreen():
-    os.system('cls')
+    os.system('cls')  #Clean up terminal
     print('\n\n\n\n\n\n\n')
     print '\n\n'
     print '    You are fully Rested!'
@@ -36,13 +40,13 @@ def townMenu():
           '        F: Enter the Field\n'
           '        S: Go to Shop\n'
           '        C: Character Info\n'
-          '        R: Rest (10G)\n'
+          '        R: Rest\n'
           '\n\n\n\n\n\n\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
 def characterMenu():
     os.system('cls')
 
-    attack = dat.characterSTR + dat.equipmentWeaponATT
+    attack = dat.characterSTR + dat.equipmentWeaponATT  #Fetch character stats
     armor = dat.characterDEF + dat.equipmentArmorDEF + dat.equipmentShieldDEF
     nextLV = experience.getNext()
 
@@ -81,7 +85,7 @@ def shopMenu():
 
 def fieldMenu():
     os.system('cls')
-    next = experience.getNext()
+    next = experience.getNext()  #Fetch required XP to level up
     print('\n  You arrive at the open fields!')
     print '\n\n  Lv: ', dat.characterLV, '        Gold: ', dat.Gold, '        Exp: ', dat.characterXP, '/', next, '\n\n'
     print('\n')
@@ -96,13 +100,13 @@ def fieldMenu():
     print('  A: Return to town, Press "x" to explore an area (x = number 1-4)\n\n')
     print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
 
-def battlePrompt():
+def battlePrompt():  #Pre-battle screen
     os.system('cls')
     print '\n\n\n\n\n\n\n\n'
     print '    Monsters have appeared!\n\n\n\n\n\n\n'
     os.system('pause')
 
-def gameOver():
+def gameOver():  #Utility game over screen just in case it is needed
     os.system('cls')
     print '\n\n\n\n\n\n          The game has been ended!\n\n\n\n\n\n'
     os.system('pause')

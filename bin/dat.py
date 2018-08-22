@@ -1,3 +1,7 @@
+#   Christian Tavares | DosQuest | 7/12/2018
+#
+#   This file is used solely to store universal variables for everything to access.
+
 PlayerInput = 'null'
 Location = 'town'
 Gold = 100

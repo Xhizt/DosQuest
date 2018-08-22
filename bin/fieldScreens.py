@@ -3,6 +3,10 @@ import dat
 import battle
 import MenuScreen
 
+#   Christian Tavares | DosQuest | 7/12/2018
+#
+#   This file holds the data for every possible outcome when exploring the fields.
+
 def battle1a():
     MenuScreen.battlePrompt()
     battle.initialize('Slime', 'null', 'null', 'A Slime emerges!!!', 0, 'regular')

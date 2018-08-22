@@ -3,6 +3,11 @@ import random
 import battle
 import fieldScreens
 
+#   Christian Tavares | DosQuest | 7/12/2018
+#
+#   This file is exactly what it sounds like. Using a random number gen, it will make a specified event from fieldScreens
+#   occur. Each function is for each area in the field, and eventually every zone in the game. Not all above libraries are used.
+
 def zone1Events():
     roll = random.randint(1, 100)
     if roll > 0 and roll < 31:

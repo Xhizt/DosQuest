@@ -5,12 +5,18 @@ import MenuScreen
 import dat
 import music
 
-def initialize():
+#   Christian Tavares | DosQuest | 7/12/2018
+#
+#   This file is called to refresh the terminal menus during gameplay. The Refresh function has functionality for
+#   playing music files you choose in .wav format only.
+
+def initialize():  #Called when the program is first initialized.
     pygame.init()
-    dat.sceneTransition = 1
-    Refresh(1)
+    dat.sceneTransition = 1 #Var used to indicate if there is an actual location change
+    Refresh(1)              #Refresh menu screen with text
     while 0 == 0:
-        if dat.gameOverFlag == 1:
+        if dat.gameOverFlag == 1: #Gameover catch in an infinite loop to read terminal input.
+                                  #If gameOverFlag = 1, the program will terminate
             break
         inputReader.processInput()
     return
@@ -21,21 +27,21 @@ def Refresh(menuCode):
     if menuCode == 1:
         if dat.sceneTransition == 1:
             music.killMusic()
-            music.playTrackLooping("Sounds/Chrono-Cross-The-Girl-who-.wav")
+            #music.playTrackLooping("Sounds/FILENAME.wav")
             dat.sceneTransition = 0
         dat.Location = 'town'
         MenuScreen.townMenu()
     if menuCode == 2:
         if dat.sceneTransition == 1:
             music.killMusic()
-            music.playTrackLooping("Sounds/Final-Fantasy-IV-Within-th.wav")
+            #music.playTrackLooping("Sounds/FILENAME.wav")
             dat.sceneTransition = 0
         dat.Location = 'shop'
         MenuScreen.shopMenu()
     if menuCode == 3:
         if dat.sceneTransition == 1:
             music.killMusic()
-            music.playTrackLooping("Sounds/DKC2-Mining-Melancholy.wav")
+            #music.playTrackLooping("Sounds/FILENAME.wav")
             dat.sceneTransition = 0
         dat.Location = 'field'
         MenuScreen.fieldMenu()

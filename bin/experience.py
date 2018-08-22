@@ -3,6 +3,11 @@ import os
 import music
 import random
 
+#   Christian Tavares | DosQuest | 7/12/2018
+#
+#   This file is used for any processes involving the player's experience, leveling up, tables for progression, and
+#   any post battle rewards. This class could also be used for other spoils af victory as well.
+
 def getNext():
     next = dat.characterLV * 100
     return next
@@ -29,7 +34,7 @@ def addGold(enemy1,enemy2,enemy3):
     dat.Gold += int(goldGain)
     return goldGain
 
-def checkPlayerLV():
+def checkPlayerLV():  #Table for stat increases each level. There is only one class right now, but each class has its own function.
     while dat.characterXP >= getNext():
         dat.characterXP -= getNext()
         dat.characterLV += 1
@@ -62,7 +67,7 @@ def checkPlayerLV():
             dat.characterMAG += 5
         levelUp()
 
-def checkXP(enemy):
+def checkXP(enemy):  #Exp amounts for every monster
     if enemy == 'null':
         return 0
     if enemy == 'Slime':
@@ -76,7 +81,7 @@ def checkXP(enemy):
     if enemy == 'Zuu':
         return 400
 
-def checkGold(enemy):
+def checkGold(enemy):  #Gold amounts for every monster
     if enemy == 'null':
         return 0
     if enemy == 'Slime':
@@ -94,7 +99,7 @@ def checkGold(enemy):
     if enemy == 'Zuu':
         return 300
 
-def levelUp():
+def levelUp():  #levelup!
     os.system('cls')
     music.playSE('Sounds/Levelup.wav')
     dat.characterCurrentHP = dat.characterHP
